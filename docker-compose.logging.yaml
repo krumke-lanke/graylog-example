@@ -6,10 +6,10 @@ networks:
 services:
     mongodb:
       image: mongo:3
-      container_name: mongo
+      container_name: graylog_mongo
     elasticsearch:
       image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.4
-      container_name: elasticsearch
+      container_name: graylog_elasticsearch
       environment:
         - http.host=0.0.0.0
         - transport.host=localhost
@@ -36,8 +36,8 @@ services:
           - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
           - GRAYLOG_HTTP_EXTERNAL_URI=http://0.0.0.0:9000/
         depends_on:
-          - mongodb
-          - elasticsearch
+          - graylog_mongodb
+          - graylog_elasticsearch
         ports:
           # Graylog web interface and REST API
           - 9000:9000

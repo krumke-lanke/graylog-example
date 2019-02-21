@@ -16,9 +16,9 @@ services:
           aliases:
             - printer.local
       volumes:
-        - ".:/printer"
-      working_dir: "/printer"
-      command: go run main.go
+        - ".:/go/src/github.com/breathman/graylog-example"
+      working_dir: /go/src/github.com/breathman/graylog-example/cmd/printer
+      command: sh -c "go build && ./printer"
       logging:
         driver: gelf
         options:
