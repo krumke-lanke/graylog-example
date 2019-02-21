@@ -1,0 +1,25 @@
+version: '3.6'
+networks:
+  example_network:
+    name: example_network
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 11.12.0.0/24
+services:
+    printer:
+      image: golang:1.10.3
+      container_name: example_printer
+      networks:
+        example_network:
+          aliases:
+            - printer.local
+      volumes:
+        - ".:/printer"
+      working_dir: "/printer"
+      command: go run main.go
+      logging:
+        driver: gelf
+        options:
+          gelf-address: "udp://11.12.0.5:12201"

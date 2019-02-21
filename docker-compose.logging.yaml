@@ -1,0 +1,47 @@
+version: '3.6'
+networks:
+  external_network:
+    external: true
+    name: example_network
+services:
+    mongodb:
+      image: mongo:3
+      container_name: mongo
+    elasticsearch:
+      image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.4
+      container_name: elasticsearch
+      environment:
+        - http.host=0.0.0.0
+        - transport.host=localhost
+        - network.host=0.0.0.0
+        - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      ulimits:
+        memlock:
+          soft: -1
+          hard: -1
+    graylog:
+        image: graylog/graylog:3.0
+        container_name: graylog
+        networks:
+          default:
+          external_network:
+            aliases:
+              - graylog.local
+            ipv4_address: 11.12.0.5
+        environment:
+          # CHANGE ME (must be at least 16 characters)!
+          - GRAYLOG_PASSWORD_SECRET=somepasswordpepper
+          # Password: admin
+          - GRAYLOG_ROOT_PASSWORD_SHA2=8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+          - GRAYLOG_HTTP_BIND_ADDRESS=0.0.0.0:9000
+          - GRAYLOG_HTTP_EXTERNAL_URI=http://0.0.0.0:9000/
+        depends_on:
+          - mongodb
+          - elasticsearch
+        ports:
+          # Graylog web interface and REST API
+          - 9000:9000
+          # GELF TCP
+          #- 12201:12201
+          # GELF UDP
+          #- 12201:12201/udp
